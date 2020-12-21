@@ -16,7 +16,8 @@ def codepadLang(vimLang):
   return filetypeMap.get(vimLang, 'Plain Text')
 
 def codepadGet(run):
-  import urllib
+  import urllib.request
+  import urllib.parse
   import vim
 
   url = 'http://codepad.org'
@@ -25,25 +26,9 @@ def codepadGet(run):
     'lang':codepadLang(vim.eval('&filetype')),
     'submit':'Submit'
   }
+  # if run is true than add the run key to the data dict with the value True
   if run:
     data['run'] = True
 
-  response = urllib.urlopen(url, urllib.urlencode(data))
+  response = urllib.request.urlopen(url, urllib.parse.urlencode(data))
   return response.geturl()
-
-def codepadPaste():
-  url = codepadGet(run=False)
-  import vim
-  vim.command("call setreg('+', '%s')" % url)
-  vim.command("call setreg('*', '%s')" % url)
-  import webbrowser
-  webbrowser.open(url)
-
-def codepadRun():
-  url = codepadGet(run=True)
-  import vim
-  vim.command("call setreg('+', '%s')" % url)
-  vim.command("call setreg('*', '%s')" % url)
-  import webbrowser
-  webbrowser.open(url)
-
